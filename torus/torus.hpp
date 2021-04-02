@@ -31,9 +31,29 @@ namespace torus {
     return { a[0] + b[0], a[1] + b[1] };
   }
 
+  inline vec_t operator+(const vec_t& a, float s) noexcept
+  {
+    return { a[0] + s, a[1] + s };
+  }
+
+  inline vec_t operator+(float s, const vec_t& a) noexcept
+  {
+    return { a[0] + s, a[1] + s };
+  }
+
   inline vec_t operator-(const vec_t& a, const vec_t& b) noexcept
   {
     return { a[0] - b[0], a[1] - b[1] };
+  }
+
+  inline vec_t operator-(const vec_t& a, float s) noexcept
+  {
+    return { a[0] - s, a[1] - s };
+  }
+
+  inline vec_t operator-(float s, const vec_t& a) noexcept
+  {
+    return { a[0] - s, a[1] - s };
   }
 
   inline vec_t operator*(const vec_t& a, const vec_t& b) noexcept

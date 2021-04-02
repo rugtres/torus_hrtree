@@ -21,32 +21,29 @@ namespace torus {
     grid_t(const grid_t&) = default;
     grid_t& operator=(const grid_t&) = default;
 
-    grid_t(size_t S) : S_(S), data_(S* S) {}
-    grid_t(size_t S, T val) : S_(S), data_(S* S, val) {}
+    grid_t(size_t S) : S_(S), data_(S * S) {}
+    grid_t(size_t S, T val) : S_(S), data_(S * S, val) {}
 
     size_t size() const noexcept { return S_ * S_; }
     size_t wh() const noexcept { return S_; }
 
-    const T& operator()(const torus::vec_t& coor) const noexcept
+    const T& operator()(const vec_t& coor) const noexcept
     {
-      auto wp = torus::wrap(coor);
+      auto wp = wrap(coor);
       return *(data_.data() + static_cast<ptrdiff_t>((wp[1] * S_ + wp[0]) * S_));
     }
 
-    T& operator()(const torus::vec_t& coor) noexcept
+    T& operator()(const vec_t& coor) noexcept
     {
-      auto wp = torus::wrap(coor);
+      auto wp = wrap(coor);
       return *(data_.data() + static_cast<ptrdiff_t>((wp[1] * S_ + wp[0]) * S_));
     }
 
-    const T& operator()(float x, float y) const noexcept
+    aabb_t pixel(const vec_t& coor) const noexcept
     {
-      return this->operator()(torus::vec_t(x, y));
-    }
-
-    T& operator()(float x, float y) noexcept
-    {
-      return this->operator()(torus::vec_t(x, y));
+      const float pr = 0.5f / S_;
+      const auto pc = (float(S_) * wrap(coor)) + pr;   // pixel center
+      return { pc, { pr, pr } };
     }
 
     auto cbegin() const noexcept { return data_.cbegin(); }

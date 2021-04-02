@@ -119,6 +119,35 @@ namespace torus {
     );            
   }
 
+
+  // for comparison ;)
+  class brute_force_t
+  {
+  public:
+    brute_force_t() {}
+
+    template <typename RaIt, typename Conv>
+    void build(RaIt first, RaIt last, Conv conv)
+    {
+      leaves_.clear();
+      for (; first != last; ++first) {
+        leaves_.push_back(conv(*first));
+      }
+    }
+
+    template <typename Fun>
+    void query(const aabb_t& bbox, Fun fun) const
+    {
+      for (size_t i = 0; i < leaves_.size(); ++i) {
+        if (intersects(leaves_[i], bbox)) {
+          fun(i);
+        }
+      }
+    }
+
+  private:
+    std::vector<aabb_t> leaves_;
+  };
 }
 
 #endif
