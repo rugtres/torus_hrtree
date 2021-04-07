@@ -21,7 +21,7 @@ namespace model {
 
     float prey_step = 1.0f;   // step length [grid cells] 
     float pred_step = 1.5f;   // step length [grid cells] 
-    float pred_sr = 0.5;     // search radius [grid cells]
+    float pred_sr = 0.25;     // search radius [grid cells]
   };
 
 
@@ -41,7 +41,7 @@ namespace model {
 
   class Simulation
   {
-    using search_tree_t = torus::brute_force_t;
+    using search_tree_t = torus::hrtree_t;
 
   public:
     Simulation(const Param& param);

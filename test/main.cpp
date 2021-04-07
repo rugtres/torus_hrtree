@@ -10,7 +10,7 @@
 using namespace torus;
 
 
-constexpr size_t N = 20'000;
+constexpr size_t N = 1'000;
 constexpr size_t G = 10;
 
 
@@ -55,8 +55,8 @@ int main()
 
   std::cout << "hrtree_t\n";
   test<hrtree_t>(pop);
-  //std::cout << "\nbrute_force_t\n";
-  //test<brute_force_t>(pop);
+  std::cout << "\nbrute_force_t\n";
+  test<brute_force_t>(pop);
 
   return 0;
 }

@@ -22,7 +22,7 @@ namespace torus {
   struct aabb_t
   {
     vec_t center;
-    vec_t radii;    // half extent in x/y, *not* enforced to be positive!
+    vec_t radii;    // half extent in x/y
   };
 
 
