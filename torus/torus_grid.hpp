@@ -29,23 +29,43 @@ namespace torus {
 
     const T& operator()(const vec_t& coor) const noexcept
     {
-      auto wp = wrap(coor);
-      return *(data_.data() + static_cast<ptrdiff_t>((wp[1] * S_ + wp[0]) * S_));
+      const auto wp = wrap(coor);
+      const auto s = static_cast<float>(S_);
+      const auto ix = static_cast<size_t>(s * wp[0]);
+      const auto iy = static_cast<size_t>(s * wp[1]);
+      assert(ix < S_);
+      assert(iy < S_);
+      return *(data_.data() + iy * S_ + ix);
     }
 
     T& operator()(const vec_t& coor) noexcept
     {
-      auto wp = wrap(coor);
-      return *(data_.data() + static_cast<ptrdiff_t>((wp[1] * S_ + wp[0]) * S_));
+      const auto wp = wrap(coor);
+      const auto s = static_cast<float>(S_);
+      const auto ix = static_cast<size_t>(s * wp[0]);
+      const auto iy = static_cast<size_t>(s * wp[1]);
+      assert(ix < S_);
+      assert(iy < S_);
+      return *(data_.data() + iy * S_ + ix);
+    }
+
+    float pixel_radius() const noexcept
+    {
+      return 0.5f / S_;
+    }
+
+    vec_t pixel_radii() const noexcept
+    {
+      return { 0.5f / S_, 0.5f / S_ };
     }
 
     aabb_t pixel(const vec_t& coor) const noexcept
     {
-      const float pr = 0.5f / S_;
-      const auto pc = (float(S_) * wrap(coor)) + pr;   // pixel center
-      return { pc, { pr, pr } };
+      const auto pr = pixel_radii();
+      const auto pc = wrap(coor + pr);   // pixel center
+      return { pc, pr };
     }
-
+     
     auto cbegin() const noexcept { return data_.cbegin(); }
     auto cend() const noexcept { return data_.end(); }
     auto begin() const noexcept { return data_.cbegin(); }

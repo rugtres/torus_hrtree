@@ -1,5 +1,6 @@
 #include <iostream>
 #include <random>
+#include <algorithm>
 #include <torus/torus.hpp>
 #include <torus/torus_hrtree.hpp>
 #include <torus/torus_grid.hpp>
@@ -13,14 +14,22 @@ constexpr size_t N = 20'000;
 constexpr size_t G = 10;
 
 
+auto reng = std::default_random_engine(0x12345678);
+
+
 template <typename SearchObj>
-void test(const std::vector<aabb_t>& pop)
+void test(std::vector<aabb_t>& pop)
 {
   game_watches::stop_watch bwatch{};
   game_watches::stop_watch qwatch{};
   SearchObj stree;
   size_t overlaps = 0;
   for (size_t g = 0; g < G; ++g) {
+    // advect
+    auto mdist = std::uniform_real_distribution<float>(-0.001f, +0.001f);
+    for (auto& pos : pop) {
+      pos.center = wrap(pos.center + vec_t{ mdist(reng), mdist(reng) });
+    }
     bwatch.start();
     stree.build(pop.cbegin(), pop.cend(), [](const auto& bbox) { return bbox; });
     bwatch.stop();
@@ -39,7 +48,6 @@ void test(const std::vector<aabb_t>& pop)
 int main()
 {
   std::vector<aabb_t> pop;
-  auto reng = std::default_random_engine(0x12345678);
   auto pdist = std::uniform_real_distribution<float>(0.0f, 1.0f);
   for (size_t i = 0; i < N; ++i) {
     pop.push_back({ {pdist(reng), pdist(reng)}, {0.01f, 0.01f} });
@@ -47,8 +55,8 @@ int main()
 
   std::cout << "hrtree_t\n";
   test<hrtree_t>(pop);
-  std::cout << "\nbrute_force_t\n";
-  test<brute_force_t>(pop);
+  //std::cout << "\nbrute_force_t\n";
+  //test<brute_force_t>(pop);
 
   return 0;
 }

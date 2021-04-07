@@ -22,7 +22,7 @@ namespace torus {
   struct aabb_t
   {
     vec_t center;
-    vec_t radii;    // half extent in x/y
+    vec_t radii;    // half extent in x/y, *not* enforced to be positive!
   };
 
 
@@ -143,7 +143,7 @@ namespace torus {
 
 
   // minimal offset
-  // centers shall be wrapped 
+  // points shall be wrapped 
   inline vec_t offset(const vec_t& a, const vec_t& b) noexcept
   {
     assert(is_wrapped(a) && is_wrapped(b));
@@ -152,23 +152,42 @@ namespace torus {
   }
 
 
+  // minimal distance squared
+  // points shall be wrapped
+  inline float distance2(const vec_t& a, const vec_t& b) noexcept
+  {
+    const auto ofs = offset(a, b);
+    return ofs[0] * ofs[0] + ofs[1] * ofs[1];
+  }
+
+
+  // minimal distance
+  // points shall be wrapped
+  inline float distance(const vec_t& a, const vec_t& b)
+  {
+    return std::sqrt(distance2(a, b));
+  }
+
+
   // All torus-operations incur rounding errors.
-  // For the intersection-tests below, we favor 'false' positives
-  // over 'false' negatives. Thus, we bump the radii by a small amount.  
+  // For the intersection-tests below, we favor 'false positives'
+  // over 'false negatives'. Thus, we bump the radii by a small amount
+  // which defaults to reps:  
   constexpr float reps = 4.f * std::numeric_limits<float>::epsilon();
 
 
   // returns true if bbox intersects pt
   // bbox.center and pt shall be wrapped.
-  inline bool intersects(const aabb_t& bbox, const vec_t& pt)
+  inline bool intersects(const aabb_t& bbox, const vec_t& pt, float eps = reps)
   {
     const auto aofs = abs(offset(pt, bbox.center));
     return (aofs[0] <= (bbox.radii[0] + reps)) && (aofs[1] <= (bbox.radii[1] + reps));
   }
 
+
   // returns true if a intersects b
   // centers shall be wrapped.
-  inline bool intersects(const aabb_t& a, const aabb_t& b)
+  inline bool intersects(const aabb_t& a, const aabb_t& b, float = reps)
   {
     const auto aofs = abs(offset(b.center, a.center));
     const auto rr = a.radii + b.radii;
@@ -180,6 +199,7 @@ namespace torus {
   // bbox.center and pt shall be wrapped.
   inline aabb_t include(const aabb_t& bbox, const vec_t& pt) noexcept
   {
+    assert(bbox.radii[0] >= 0 && bbox.radii[1] >= 0);
     const auto ofs = offset(pt, bbox.center);
     const auto p = bbox.center + ofs;
     const auto lo = min(bbox.center - bbox.radii, p);
@@ -188,10 +208,13 @@ namespace torus {
     return ret;
   }
 
+
   // returns the minimal bounding box that contains the boxes a and b
   // centers shall be wrapped.
   inline aabb_t include(const aabb_t& a, const aabb_t& b) noexcept
   {
+    assert(a.radii[0] >= 0 && a.radii[1] >= 0);
+    assert(b.radii[0] >= 0 && b.radii[1] >= 0);
     const auto ofs = offset(b.center, a.center);
     const auto cb = a.center + ofs;
     const auto lo = min(a.center - a.radii, cb - b.radii);

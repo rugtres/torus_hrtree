@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="model.cpp" />
     <ClCompile Include="pred_prey.cpp" />
   </ItemGroup>
   <ItemGroup>
