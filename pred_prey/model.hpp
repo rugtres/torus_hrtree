@@ -21,7 +21,7 @@ namespace model {
 
     float prey_step = 1.0f;   // step length [grid cells] 
     float pred_step = 1.5f;   // step length [grid cells] 
-    float pred_sr = 0.25;     // search radius [grid cells]
+    float pred_sr = 0.5;     // search radius [grid cells]
   };
 
 

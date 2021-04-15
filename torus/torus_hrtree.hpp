@@ -111,12 +111,13 @@ namespace torus {
   template <typename Fun>
   void hrtree_t::query(const aabb_t& bbox, Fun fun) const
   {
+    auto wfun = [fun = fun, it = ki_.cbegin()](size_t i) { fun((it + i)->second); };
     hrtree_.query(
-      [bbox=bbox](const aabb_t& rhs) { 
-        return intersects(bbox, rhs); 
+      [bbox = bbox](const aabb_t& rhs) {
+        return intersects(bbox, rhs);
       },
-      fun
-    );            
+      wfun
+    );
   }
 
 
